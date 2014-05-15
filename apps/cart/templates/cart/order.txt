@@ -1,0 +1,12 @@
+=== Заказ #{{ order.id|stringformat:"06d" }} от {{ order.date|date:"d/m/y" }} ===
+{% for item in items %}
+    {{ forloop.counter }}. {{ item.content_object }}: {{ item.price }} руб. * {{ item.quantity }} шт. = {{ item.total }} руб.
+{% endfor %}
+=================================================================================
+Итого {{ order.goods }} товаров на сумму {{ order.total }} руб.
+
+===Данные заказа #{{ order.id|stringformat:"06d" }}===
+Имя:        || {{contact.name}}
+Телефон:    || {{contact.phone}}
+E-mail:     || {{contact.email}}
+Комментарий:|| {{contact.comment}}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load pytils_numeral %}
+{% load thumbnail %}
+{% load pagination_tags %}
+{% load common_tags %}
+{% load catalog_tags %}
+
+{% block title %}
+    Результаты поиска / {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ block.super }} » <a href="{% url 'catalog:index' %}">Интернет магазин</a> » <a href="#">Результаты поиска</a>
+{% endblock %}
+
+{% block content_right %}
+
+    {% if results %}
+        <h1>Результаты поиска - {{ site_search_q }} ({{ count_result }})</h1>
+{#        {% for key, list in results %}#}
+{##}
+{#        {% endfor %}#}
+    {% else %}
+        <h1> К сожалению, по вашему запросу ничего не найдено. </h1>
+    {% endif %}
+  {% autopaginate results %}
+    <table cellpadding="5" cellspasing="0" border="0" width="100%">
+        {% for object in results %}
+            {% if forloop.counter0|divisibleby:'3' %}
+                <tr>
+            {% endif %}
+            <td valign="top" width="33%">
+                <div class="carus-product-image">
+                    {% thumbnail object.image "156x150" format="PNG" crop="center" as im %}
+                        <img src="{{ im.url }}" alt="{{ object.name }}"/>
+                    {% endthumbnail %}
+                    {% product_mark object.pk as mark %}
+                    <img class="stiker" src="{{ STATIC_URL }}images/{{ mark }}"/>
+                </div>
+                <div class="carus-product-title"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></div>
+                <div class="carus-product-price">
+                    {% if object.is_sale %}{{ object.price|strip_zeros|intspace:"&thinsp;" }}{% else %}{{ object.price|strip_zeros|intspace:"&thinsp;" }}{% endif %} руб.
+                </div>
+                <div class="carus-product-order"><a href="#" onclick="return cart.add(this, {{ object.cart.content_type.id }}, {{ object.cart.object_id }}, {{ object.price }});">Купить</a></div>
+            </td>
+            {% if forloop.counter|divisibleby:'3' %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    {% paginate %}
+{% endblock %}

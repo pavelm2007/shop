@@ -1,0 +1,240 @@
+{% load staticfiles %}
+{% load common_tags %}
+{% load catalog_tags %}
+{% load flatpages %}
+{% load thumbnail %}
+{% load flatcontent_tags %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru" xml:lang="ru">
+<head>
+    <title>{% block title %}производственно - торговая компания "ЯВА"{% endblock title %}</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="description" content="{% block description %}{% endblock %}"/>
+    <meta name="keywords" content="{% block keywords %}{% endblock %}"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css"/>
+    {% block extra_css %}{% endblock extra_css %}
+    {#<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">#}
+    <script type="text/javascript" src="{% static 'js/jquery-1.10.2.js' %}"></script>
+    {#    <script type="text/javascript" src="{% static 'js/jquery.mousewheel.js' %}"></script>#}
+    {#    <script type="text/javascript" src="{% static 'js/my_carousel.js' %}"></script>#}
+    {#    <script type="text/javascript" src="{% static 'js/jquery.innerfade.js' %}"></script>#}
+    <script type="text/javascript" src="{{ STATIC_URL }}cart/js/jquery.cart.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
+    <!-- cart-->
+    {% block extra_js %}
+        <script type="text/javascript">
+            (function ($) {
+                $(document).ready(function () {
+                    $('ul#catalog-termin ul').each(function (i) { // Check each submenu:
+                        $(this).prev().addClass('active').click(function () { // Attach an event listener
+                            var this_i = $('ul#catalog-termin ul').index($(this).next()); // The index of the submenu of the clicked link
+                            if ($(this).next().css('display') == 'none') {
+                                // When opening one submenu, we hide all same level submenus:
+                                $(this).parent('li').parent('ul').find('ul').each(function (j) {
+                                    if (j != this_i) {
+                                        $(this).slideUp(200, function () {
+                                            $(this).prev().removeClass('expanded').addClass('collapsed');
+                                        });
+                                    }
+                                });
+                                // :end
+
+                                $(this).next().slideDown(200, function () { // Show submenu:
+                                    $(this).prev().removeClass('collapsed').addClass('expanded');
+                                });
+                            } else {
+                                $(this).next().slideUp(200, function () { // Hide submenu:
+                                    $(this).prev().removeClass('expanded').addClass('collapsed');
+                                    $(this).find('ul').each(function () {
+                                        $(this).hide(0, cookieDel($('ul#catalog-termin ul').index($(this)))).prev().removeClass('expanded').addClass('collapsed');
+                                    });
+                                });
+                            }
+                            return false;
+                        });
+                    });
+                });
+            }(jQuery));
+        </script>
+    {% endblock extra_js %}
+
+</head>
+<body>
+<div id="page">
+    <div id="page-site">
+        <div id="head">
+            <div id="head-url">
+                <ul>
+                    <li><a href="/"><img alt="home" src="{{ STATIC_URL }}images/icon-home.png"/></a></li>
+                    <li><a href="{% url 'feedback:leave_feedback' %}"><img alt="mail"
+                                                                           src="{{ STATIC_URL }}images/icon-mail.png"/></a>
+                    </li>
+                    <li><a href="/"><img alt="map" src="{{ STATIC_URL }}images/icon-map.png"/></a></li>
+                </ul>
+            </div>
+            <div id="head-logo"><a href="/"><img alt="logo" src="{{ STATIC_URL }}images/logo.png"/></a></div>
+            <div id="head-phone">
+                <div class="phone">
+                    <span class="code">{% flatcontent phone_code as code %}{{ code }}</span> <span
+                        class="number">{% flatcontent phone_number as number %}{{ number }}</span>
+                </div>
+                <div class="phone-url"><a href="{% url 'contact' %}">все контакты</a></div>
+            </div>
+            <div id="head-menu">
+                <ul>
+                    <li>
+                        <a id="hm-1" {% active_contain request '/about/' %} href="{% url 'about' %}">О компании</a>
+                    </li>
+                    <li>
+                        <a id="hm-2" {% active_contain request '/catalog/' %} href="{% url 'catalog:index' %}">Интернет-магазин</a>
+                    </li>
+                    <li>
+                        <a id="hm-3" {% active_contain request '/payment/' %} href={% url 'payment' %}>Оплата</a>
+                    </li>
+                    <li>
+                        <a id="hm-4" {% active_contain request '/wholesale_department/' %}
+                           href="{% url 'wholesale_department' %}">Оптовый отдел</a>
+                    </li>
+                    <li>
+                        <a id="hm-5" {% active_contain request '/delivery/' %} href="{% url 'delivery' %}">Доставка</a>
+                    </li>
+                    <li>
+                        <a id="hm-6" {% active_contain request '/questions/' %} href="{% url 'questions' %}">Вопрос-ответ</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="clearing"></div>
+        </div>
+        {% block head_line %}
+            <div id="head-line">
+                <div id="head-city">
+                    {#                    {% site_city_main as city_main %}#}
+                    <div class="select-city-page">Ваш город: <span class="title-city"><a href="#" class='city-item'
+                                                                                         city='{{ request.session.city.pk }}'>{{ request.session.city.name }}</a></span>
+                    </div>
+
+                    <div class="block-search">
+{#                        <script type="text/javascript" src="{{ STATIC_URL }}common/jquery.mockjax.js"></script>#}
+                        <script type="text/javascript" src="{{ STATIC_URL }}common/jquery.autocomplete.js"></script>
+                        <script type="text/javascript">
+                            var options, a;
+                            jQuery(function () {
+                                options = {
+                                    serviceUrl: "{% url 'common:search_list' %}",
+                                    minChars:2,
+                                    width:327,
+{#                                    appendTo: '#suggestions-container'#}
+                                };
+                                a = $('#id_query_field').autocomplete(options);
+                            });
+                        </script>
+                        <form action="{% url 'common:search_product' %}">
+                            {% csrf_token %}
+                            {{ search_form.query_field }}
+{#                            <div id="suggestions-container" class="autocomplete-suggestions"></div>#}
+{#                            <div id="suggestions-container" class="autocomplete-suggestions" style="position: relative; float: left; width: 400px; margin: 10px;"></div>#}
+                            {#                            <input type="text" class="form-text" value=""/>#}
+                            <input class="form-submit" type="submit" value=" Найти "/>
+                        </form>
+                    </div>
+                </div>
+
+                {% include 'cart/panel.html' %}
+
+                <div class="clearing"></div>
+                <div class="select-city-block">
+                    <ul>
+                        {% site_city as site_city %}
+
+                        {% for city in site_city %}
+                            <li><a href="{% url 'catalog:catalog_city' city.pk %}"
+                                   city='{{ city.pk }}'>{{ city.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block content %}
+            <div id="site-content">
+                <div id="block-left">
+                    {% block content_left %}
+                        {% include 'include/content_left.html' %}
+                    {% endblock %}
+                </div>
+                <div id="block-content">
+                    <div class="breadcrumb">
+                        {% block breadcrumb %}
+                            <a href="{% url 'index' %}">Главная</a>
+
+                        {% endblock %}
+                    </div>
+                    {% block content_right %}
+
+                    {% endblock %}
+                    <div class="clearing"></div>
+                </div>
+            </div>
+        {% endblock %}
+
+        <div class="clearing"></div>
+        <div id="block-about">
+            {% get_flatpages '/about/' as about %}
+            {{ about.title }}
+            <h1>О компании</h1>
+
+            <div><p>Наша компания занимается продажей и доставкой различных товаров для строительства и отделки домов,
+                сопудствующих товаров, а так же различных других товаров.</p>
+
+                <p>Благодаря уникальной услуге “Доставим любой товар!” мы можем осуществить доставку абсолютно любого
+                    товара, даже которого нет на нашем сайте, в любую точку России и стран СНГ.</p>
+            </div>
+            <div id="block-uslugi">
+                <ul>
+                    {% get_flatpages '/service/' as service_pages %}
+                    {% for page in service_pages %}
+                        <li id="usluga-{{ forloop.counter }}">
+                            <a href="{% url 'page' page.url %}">
+                                {#                                {% thumbnail page.image "134x99" format="PNG" as im %}#}
+                                <img alt="{{ page.title }}" src="{{ MEDIA_URL }}{{ page.image }}"/><br/>{{ page.title }}
+                                {#                                    <img alt="{{ page.title }}" src="{{ im.url }}"/><br/>{{ page.title }}#}
+                                {#                                {% endthumbnail %}#}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="clearing"></div>
+        <div id="footer-menu">
+            <ul>
+                <li><a href="{% url 'about' %}">О компании</a></li>
+                <li><a href="{% url 'catalog:index' %}">Интернет-магазин</a></li>
+                <li><a href="{% url 'payment' %}">Оплата</a></li>
+                <li><a href="{% url 'wholesale_department' %}">Оптовый отдел</a></li>
+                <li><a href="{% url 'delivery' %}">Доставка</a></li>
+                <li><a href="{% url 'questions' %}">Вопрос-ответ</a></li>
+                <li><a href="{% url 'contact' %}">Контакты</a></li>
+            </ul>
+        </div>
+        <div class="clearing"></div>
+        <div id="footer">
+            <div id="footer-logo"><a href="/"><img alt="" src="{{ STATIC_URL }}images/footer-logo.png"/></a></div>
+            <div id="footer-copy">
+                <div class="white">{% flatcontent footer_name as footer_name %}{{ footer_name }}</div>
+                <div>{% flatcontent footer_address as footer_address %}{{ footer_address }}</div>
+                {% flatcontent footer_mail as footer_mail %}
+                <div>E-mail: <a href="mailto:{{ footer_mail }}">{{ footer_mail }}</a></div>
+            </div>
+            <div id="footer-phone">
+                Тел.: <span class="code">{{ code }}</span> <span class="number">{{ number }}</span>
+            </div>
+            <div id="footer-counter"><a href="/"><img alt="" src="{{ STATIC_URL }}images/counter.png"/></a></div>
+            <div class="clearing"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

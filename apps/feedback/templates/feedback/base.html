@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{#{% load flatpages %}#}
+
+{% block title %}
+Обратная связь / {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ block.super }} » <a href="{% url 'catalog:index' %}">Интернет магазин</a> » <a href="{{ current_category.get_absolute_url }}">Обратная связь</a>
+{% endblock %}
+

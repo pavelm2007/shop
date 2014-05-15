@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load catalog_tags %}
+{% load thumbnail %}
+
+{% block title %}Главная страница / {{ block.super }}{% endblock title %}
+{% block description %}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block extra_css %}{% endblock extra_css %}
+
+{% block head_line %}
+    <div id="head-line">
+        <div id="head-city">
+            <div class="select-city">Ваш город: <span class="title-city"><a href="#" class='city-item'
+                                                                            city='{{ request.session.city.pk }}'>{{ request.session.city.name }}</a></span>
+            </div>
+        </div>
+        <div id="head-basket">
+            {% include 'cart/panel.html' %}
+        </div>
+        <div class="clearing"></div>
+        <div class="select-city-block select-city-block-main">
+            <ul>
+                {% site_city as site_city %}
+
+                {% for city in site_city %}
+                    <li><a href="{% url 'catalog:catalog_city' city.pk %}" city='{{ city.pk }}'>{{ city.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="catalog-front">
+        <div id="catalog-main">
+            <ul>
+                {% get_root_category as root_category %}
+                {% for category in root_category %}
+                    <li class="{% if forloop.counter|divisibleby:"2" %}even{% else %}odd{% endif %}">
+                        <a href="{{ category.get_absolute_url }}">
+                            {% thumbnail category.image "151x80" format="PNG" as im %}
+                                <img alt="{{ category.name }}" src="{{ im.url }}"/><br/>{{ category.name }}
+                            {% endthumbnail %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="clearing"></div>
+
+        <div id="catalog-dop">
+            <ul>
+                {% for category in root_category %}
+                    <li id="cat-dop-{{ forloop.counter }}"
+                        class="cat-dop-item {% if forloop.counter|divisibleby:"2" %}even{% else %}odd{% endif %}">
+                        {% if forloop.counter|divisibleby:"2" %}
+                            <div class="cat-dop-text">
+                                <ul>
+                                    {% for node in category.get_main_page_leaf_nodes %}
+                                        <li><a href="{{ node.get_absolute_url }}">{{ node.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>{% else %}{% endif %}
+                        <div class="cat-dop-image">
+                            <ul id="cat-dop-image-{{ forloop.counter }}">
+
+                                {% for image in category.get_images %}
+                                    <li>
+                                        {% thumbnail image.image "247x148" format="PNG" crop="center" as im %}
+                                            <img alt="{{ category.name }}" src="{{ im.url }}"/>
+                                        {% endthumbnail %}
+                                    </li>
+                                {% endfor %}
+
+
+                                {#                                <li><img src="{{ STATIC_URL }}images/cat-dop-3-img.png"/></li>#}
+                            </ul>
+                        </div>
+                        {% if forloop.counter|divisibleby:"2" %}
+                        {% else %}
+                            <div class="cat-dop-text">
+                                <ul>
+                                    {% for node in category.get_main_page_leaf_nodes %}
+                                        <li><a href="{{ node.get_absolute_url }}">{{ node.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery.mousewheel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/my_carousel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.innerfade.js' %}"></script>
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $('ul#cat-dop-image-1').innerFade({
+//			indexContainer: '#navig ul',
+                    speed: 1000,
+                    timeout: 3000,
+                    type: 'sequence',
+//            prevLink: '.prev',
+//            nextLink: '.next'
+                });
+                $('ul#cat-dop-image-2').innerFade({
+//			indexContainer: '#navig ul',
+                    speed: 1000,
+                    timeout: 4000,
+                    type: 'sequence',
+//            prevLink: '.prev',
+//            nextLink: '.next'
+                });
+                $('ul#cat-dop-image-3').innerFade({
+//			indexContainer: '#navig ul',
+                    speed: 1000,
+                    timeout: 3000,
+                    type: 'sequence',
+//            prevLink: '.prev',
+//            nextLink: '.next'
+                });
+                $('ul#cat-dop-image-4').innerFade({
+//			indexContainer: '#navig ul',
+                    speed: 1000,
+                    timeout: 4000,
+                    type: 'sequence',
+//            prevLink: '.prev',
+//            nextLink: '.next'
+                });
+            });
+        }(jQuery));
+    </script>
+{% endblock extra_js %}

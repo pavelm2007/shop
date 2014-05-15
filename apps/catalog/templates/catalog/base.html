@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Интернет магазин / {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ block.super }} » <a href="{% url 'catalog:index' %}">Интернет магазин</a>
+{% endblock %}
+
+{% block content_left %}
+    {{ block.super }}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}cart/js/jquery.cart.js"></script>
+    <script type="text/javascript">
+        cart.add_url = '{% url 'cart:show_cart' %}';
+        cart.upd_url = '{% url 'cart:show_cart' %}';
+        cart.del_url = '{% url 'cart:show_cart' %}';
+    </script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "cart/base.html" %}
+{% load i18n %}
+
+{% block title %}Корзина и оформление заказа / {{ block.super }}{% endblock title %}
+
+{% block content_right %}
+    <h1>Ваш заказ принят</h1>
+    <p>Наш менеджер свяжется с Вами и уточнит детали заказа.</p>
+     <div class="url-back"><a href="{% url 'catalog:index' %}">< Назад в каталог</a></div>
+{% endblock %}

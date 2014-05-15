@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load common_tags %}
+{% load pytils_numeral %}
+<a href="{% url 'cart:show_cart' %}">
+    <img alt="" src="{{ STATIC_URL }}images/icon-basket.png" align="absmiddle"/>
+</a>
+{% if order %}
+    <span><a href="{% url 'cart:show_cart' %}">{{ order.goods }}</a></span>
+    {{ order.goods|choose_plural:"товар, товарa, товаров" }} на
+    <span><a href="{% url 'cart:show_cart' %}">{{ order.total|strip_zeros|intspace:"&thinsp;" }} руб.</a> </span>
+{% elif request.order and not request.order.empty %}
+    <span><a href="{% url 'cart:show_cart' %}">{{ request.order.goods }}</a></span>
+    {{ request.order.goods|choose_plural:"товар, товарa, товаров" }} на
+    <span><a href="{% url 'cart:show_cart' %}">{{ request.order.total|strip_zeros|intspace:"&thinsp;" }} руб.</a></span>
+    {#    <p>#}
+    {#    {% blocktrans with request.order.goods as items and request.order.summary as price  %}#}
+    {#    {{ items }} items in cart. Total cost {{ price }}#}
+    {#    {% endblocktrans %}#}
+    {# use for russian translation #}
+    {% comment %}
+    {% load pytils_numeral %}
+    {{ request.order.goods|choose_plural:"item1, items2, items5" }}
+    {% endcomment %}
+    {#    </p>#}
+    {#    <a href="{% url basket %}" title="{% trans 'Submit order' %}">{% trans 'Go to basket page' %}</a></p>#}
+{% else %}
+    <span><a href="{% url 'cart:show_cart' %}">0</a></span> товаров на
+    <span><a href="{% url 'cart:show_cart' %}">0 руб.</a></span>
+    {#    <p>{% trans 'Basket is empty' %}</p>#}
+{% endif %}

@@ -1,0 +1,41 @@
+{% load thumbnail %}
+{% load common_tags %}
+{% load i18n %}
+<table cellpadding="5" cellspasing="0" border="0" width="100%" class="table-zebra">
+    <tr>
+        <th class="tb-name">Наименование, артикул</th>
+        <th class="tb-count">Кол-во</th>
+        <th class="tb-summ">Цена</th>
+        <th class="tb-delete">x</th>
+    </tr>
+    {% for form in formset.forms %}
+        <tr>
+            <td>
+                <div class="pro-list-title"><a
+                        href="{{ form.instance.content_object.get_absolute_url }}">{{ form.instance.content_object.name }}</a>
+                </div>
+                <div class="pro-list-code">{% if form.instance.content_object.SKU %}арт:
+                    {{ form.instance.content_object.SKU }}{% endif %}</div>
+            </td>
+            <td align="center">
+                <div class="pro-list-count" rel='{{ form.instance.pk }}'>
+                            <input type="button" class="minus" value=" "/>
+                            <input type="text" name="count" class="count-product" value="{{ form.instance.quantity }}" rel='{{ form.instance.pk }}' c_t_id='{{ form.instance.content_type }}' o_id= '{{ form.instance.object_id }}' i_id='{{ form.instance.id }}'/>
+                            <input type="button" class="plus" value=" "/>
+                        </div>
+            </td>
+            <td>
+                <div class="pro-list-price">{{ form.instance.content_object.price }}</div>
+            </td>
+            <td>
+                <div class="pro-list-delete"><a href="#" onclick="return cart.del(this, {{ form.instance.id }});">x</a></div>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+<div class="pro-all-itog">
+    <div class="pro-all-itog-text">Итого:</div>
+    <div class="pro-all-itog-count">Количество: <b>{{ order.goods }} шт.</b></div>
+    <div class="pro-all-itog-summ">Сумма: <b>{{ order.total|strip_zeros|intspace:"&thinsp;" }} руб.</b></div>
+    <div class="clearing"></div>
+</div>

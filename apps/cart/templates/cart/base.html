@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+    {{ block.super }} » <a href="{% url 'catalog:index' %}">Интернет магазин</a>
+{% endblock %}
+
+{% block content_left %}
+    {{ block.super }}
+{% endblock %}

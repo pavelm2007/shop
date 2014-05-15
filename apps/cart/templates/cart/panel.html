@@ -1,0 +1,32 @@
+{% load i18n %}
+<script type="text/javascript">
+    <!--
+    $(document).ready(function () {
+        cart.panel = $('#head-basket');
+
+        $(document).bind("before_add.basket", function (e) {
+            cart.panel.find('.block-cart').hide();
+        });
+
+        $(document).bind("add_success.basket", function (e, data) {
+            $('.block-cart').html(data.panel_html);
+            cart.panel.find('.block-cart').show();
+        });
+        $(document).bind("del_success.basket", function (e, data) {
+            $('.block-cart').html(data.panel_html);
+            cart.panel.find('.block-cart').show();
+        });
+
+        $(document).bind("add_error.basket", function (e, error) {
+            alert('{% trans "Error occured when addin to basket:\n" %}' + error);
+            window.location.reload();
+        });
+    });
+    //-->
+</script>
+<div id="head-basket">
+    <div class="block-cart">
+        {% include 'cart/summary.html' %}
+    </div>
+</div>
+

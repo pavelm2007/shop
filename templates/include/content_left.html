@@ -1,0 +1,17 @@
+{% load catalog_tags %}
+
+<div id="catalogue-left">
+    <ul id="catalog-termin">
+        {% root_category as root_category %}
+        {% for category in root_category %}
+        <li id="cat-left-{{ forloop.counter }}" class="{% if forloop.counter|divisibleby:"2" %}even{% else %}odd{% endif %}">
+            <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+            <ul  {% ifequal category root_cat %} style="display: block;"{% endifequal %}>
+                {% for node in category.get_leaf_nodes %}
+                <li {% ifequal category root_cat %} style="display: block;"{% endifequal %}> <a href="{{ node.get_absolute_url }}">{{ node.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

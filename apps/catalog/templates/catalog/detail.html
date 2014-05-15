@@ -1,0 +1,123 @@
+{% extends 'catalog/base.html' %}
+
+{% load thumbnail %}
+{% load common_tags %}
+{% load catalog_tags %}
+
+{% block title %}
+{{ object.name }} / {{ current_category.name }} / {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }}{% for node in current_category.get_ancestors %} » <a href="{{ node.get_absolute_url }}">{{ node.name }}</a>{% endfor %}
+ » <a href="{{ current_category.get_absolute_url }}">{{ current_category.name }}</a> » <a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+{% endblock %}
+
+{% block content_right %}
+    <h1>{{ object.name }}</h1>
+    <div class="product-image">
+        <ul class="image-prev">
+            {% for image in object.get_images %}
+                <li class="{% if forloop.first %}first{% elif forloop.last %}last{% else %}img-{{ forloop.counter }}-slide{% endif %} "
+                    id="img-{{ forloop.counter }}-slide">
+                    {% thumbnail image.image "242x212" format="PNG" crop="center" as im %}
+                        <a href="{{ im.url }}" class="colorbox" rel="gallery-1">
+                            {#                            <img src="{{ im.url }}" alt="{{ object.name }}"/>#}
+                            {% thumbnail image.image "242x212" format="PNG" crop="center" as imi %}
+                                <img src="{{ imi.url }}" alt="{{ object.name }}"/>
+                            {% endthumbnail %}
+                        </a>
+                    {% endthumbnail %}
+
+
+                </li>
+            {% endfor %}
+        </ul>
+        <ul class="image-small">
+            {% for image in object.get_images %}
+                <li id="img-{{ forloop.counter }}">
+                {% thumbnail image.image "65x57" format="PNG" crop="center" as imi %}
+                    <img src="{{ imi.url }}" alt="{{ object.name }}"/>
+                {% endthumbnail %}
+            {% endfor %}
+{#            <li id="img-2"><img src="images/pro-1-3.png"/></li>#}
+{#            <li id="img-3"><img src="images/pro-1-2.png"/></li>#}
+{#            <li id="img-4"><img src="images/pro-1-1.png"/></li>#}
+        </ul>
+        <div class="product-best">
+            {% product_mark object.pk as mark %}
+            <img class="stiker" src="{{ STATIC_URL }}images/{{ mark }}"/>
+        </div>
+    </div>
+    <div class="product-price">
+        <div class="pricel-label">Цена</div>
+        <div class="price-number">{% if object.is_sale %}{{ object.price|strip_zeros|intspace:"&thinsp;" }}{% else %}{{ object.price|strip_zeros|intspace:"&thinsp;" }}{% endif %}
+            руб.
+        </div>
+    </div>
+    <div class="product-add-cart">
+        <form action="/">
+            Количество:&nbsp;&nbsp;&nbsp;<input type="button" class="minus" value=" "/>
+            <input type="text" name="count"
+                   class="count-product"
+                   value="1"/> <input
+                type="button" class="plus" value=" "/>&nbsp;&nbsp;&nbsp;<input type="button" class="add-to-cart" value="Купить" onclick="return cart.add(this, {{ object.cart.content_type.id }}, {{ object.cart.object_id }}, {{ object.price }});"/>
+{#            <a href="" class="add-to-cart">Купить</a>#}
+        </form>
+{#        <a href="" class="product-add-cart add-to-cart">Купить</a>#}
+    </div>
+    <div class="block-description">
+        <h4>Характеристики:</h4>
+        {% for node in object.get_options %}
+            <div class="describ-row">
+                <div class="label">{{ node.option.name }}</div>
+                <div class="znach">{{ node.value }} {{ node.option_value.name }}</div>
+            </div>
+        {% endfor %}
+
+    </div>
+    <div class="clearing"></div>
+    <div class="block-full-description">
+        <h4>Описание</h4>
+        {{ object.description|safe }}
+    </div>
+    <div class="url-back"><a href="{% url 'catalog:index' %}">< Назад в каталог</a></div>
+    {#    </div>#}
+{% endblock %}
+
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/colorbox/colorbox.css" type="text/css">
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/colorbox/jquery.colorbox.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/colorbox/jquery.colorbox-ru.js"></script>
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $(".image-prev li").each(function (index) {
+                    if (index) $(this).hide();
+                });
+
+                $(".image-small li").click(function () {
+                    elemID = $(this).attr("id");
+                    $("ul.image-prev li").each(function (index) {
+                        $(this).hide();
+                    });
+                    $("ul.image-prev li#" + elemID + "-slide").show();
+                });
+                $(".product-add-cart .minus").click(function () {
+                    var ProCount = $(".count-product").val() - 0;
+                    if (ProCount - 1 > 0) $(".count-product").val(ProCount - 1);
+                });
+                $(".product-add-cart .plus").click(function () {
+                    var ProCount = $(".count-product").val() - 0;
+                    $(".count-product").val(ProCount + 1);
+                });
+                $(".colorbox").colorbox({rel: 'gallery-1'});
+            });
+        }(jQuery));
+    </script>
+{% endblock %}

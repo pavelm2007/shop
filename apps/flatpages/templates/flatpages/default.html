@@ -1,0 +1,26 @@
+{% extends "flatpages/base.html" %}
+{% load flatpages %}
+{% load thumbnail %}
+{% block title %}
+    {{ flatpage.title }} /{{ block.super }}
+{% endblock %}
+
+{% block description %}
+    {{ flatpage.meta_description }},{{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ block.super }} » <a href="{{ flatpage.get_absolute_url }}">{{ flatpage.title }}</a>
+{% endblock %}
+
+
+{% block content_left %}
+    {{ block.super }}
+{% endblock %}
+
+
+{% block content_right %}
+<h1>{{ flatpage.title }}</h1>
+{{ flatpage.content|safe }}
+<div class="clearing"></div>
+{% endblock %}

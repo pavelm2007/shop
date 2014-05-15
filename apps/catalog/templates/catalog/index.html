@@ -1,0 +1,162 @@
+{% extends 'catalog/base.html' %}
+
+{% load thumbnail %}
+{% load common_tags %}
+{% load catalog_tags %}
+
+{% block breadcrumb %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content_right %}
+    <div id="block-hit-product">
+        <h3>Лучшие предложения</h3>
+
+        <div class="carus-strelka"><a href="#" class="next"><img src="{{ STATIC_URL }}images/car-str-left.png"/></a>
+        </div>
+        <div class="hit-product">
+            <ul>
+                {% for object in deals %}
+                    <li>
+                        <div class="carus-product-image">
+                            <a href="{{ object.get_absolute_url }}">
+                                {% thumbnail object.image "156x150" format="PNG" crop="center" as im %}
+                                    <img src="{{ im.url }}" alt="{{ object.name }}"/>
+                                {% endthumbnail %}
+                            </a>
+                            {% product_mark object.pk as mark %}
+                            <img class="stiker" src="{{ STATIC_URL }}images/{{ mark }}"/>
+                        </div>
+                        <div class="carus-product-title"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+                        </div>
+                        <div class="carus-product-price">
+                            {{ object.price|strip_zeros|intspace:"&thinsp;" }} руб.
+                        </div>
+                        <div class="carus-product-order"><a href="#"
+                                                            onclick="return cart.add(this, {{ object.cart.content_type.id }}, {{ object.cart.object_id }}, {{ object.price }});">Купить</a>
+                        </div>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+        <div class="carus-strelka"><a href="#" class="prev"><img src="{{ STATIC_URL }}images/car-str-right.png"/></a>
+        </div>
+        <div class="clearing"></div>
+    </div>
+    <br/>
+
+    <div id="block-popular-product">
+        <h3>Популярные продукты</h3>
+
+        <div class="carus-strelka"><a href="#" class="next"><img src="{{ STATIC_URL }}images/car-str-left.png"/></a>
+        </div>
+        <div class="popular-product">
+            <ul>
+                {% for object in popular %}
+                    <li>
+                        <div class="carus-product-image">
+                            <a href="{{ object.get_absolute_url }}">
+                                {% thumbnail object.image "156x150" format="PNG" crop="center" as im %}
+                                    <img src="{{ im.url }}" alt="{{ object.name }}"/>
+                                {% endthumbnail %}
+                            </a>
+                            {% product_mark object.pk as mark %}
+                            <img class="stiker" src="{{ STATIC_URL }}images/{{ mark }}"/>
+                        </div>
+                        <div class="carus-product-title"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+                        </div>
+                        <div class="carus-product-price">
+                            {{ object.price|strip_zeros|intspace:"&thinsp;" }} руб.
+                        </div>
+                        <div class="carus-product-order"><a href="#"
+                                                            onclick="return cart.add(this, {{ object.cart.content_type.id }}, {{ object.cart.object_id }});">Купить</a>
+                        </div>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+        <div class="carus-strelka"><a href="#" class="prev"><img
+                src="{{ STATIC_URL }}images/car-str-right.png"/></a></div>
+        <div class="clearing"></div>
+    </div>
+    <br/>
+
+    {% if novelty %}
+        <div id="block-new-product">
+            <h3>Новинки</h3>
+
+            <div class="carus-strelka"><a href="#" class="next"><img src="{{ STATIC_URL }}images/car-str-left.png"/></a>
+            </div>
+            <div class="new-product">
+                <ul>
+                    {% for object in novelty %}
+                        <li>
+                            <div class="carus-product-image">
+                                <a href="{{ object.get_absolute_url }}">
+                                    {% thumbnail object.image "156x150" format="PNG" crop="center" as im %}
+                                        <img src="{{ im.url }}" alt="{{ object.name }}"/>
+                                    {% endthumbnail %}
+                                </a>
+                                {% product_mark object.pk as mark %}
+                                <img class="stiker" src="{{ STATIC_URL }}images/{{ mark }}"/>
+                            </div>
+                            <div class="carus-product-title"><a
+                                    href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+                            </div>
+                            <div class="carus-product-price">
+                                {{ object.price|strip_zeros|intspace:"&thinsp;" }} руб.
+                            </div>
+                            <div class="carus-product-order"><a href="#"
+                                                                onclick="return cart.add(this, {{ object.cart.content_type.id }}, {{ object.cart.object_id }});">Купить</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+            <div class="carus-strelka"><a href="#" class="prev"><img
+                    src="{{ STATIC_URL }}images/car-str-right.png"/></a>
+            </div>
+            <div class="clearing"></div>
+        </div>
+        <br/>
+    {% endif %}
+
+
+    <div class="clearing"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/my_carousel.js"></script>
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $(".hit-product").myCarousel({
+                    btnNext: "#block-hit-product .next",
+                    btnPrev: "#block-hit-product .prev",
+                    speed: 500,
+                    easing: "easeinout",
+                    visible: 3
+                });
+                $(".popular-product").myCarousel({
+                    btnNext: "#block-popular-product .next",
+                    btnPrev: "#block-popular-product .prev",
+                    speed: 500,
+                    easing: "easeinout",
+                    visible: 3
+                });
+                $(".new-product").myCarousel({
+                    btnNext: "#block-new-product .next",
+                    btnPrev: "#block-new-product .prev",
+                    speed: 500,
+                    easing: "easeinout",
+                    visible: 3
+                });
+            });
+        }(jQuery));
+    </script>
+{% endblock %}
